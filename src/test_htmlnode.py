@@ -1,6 +1,6 @@
 import unittest
 
-from htmlnode import HTMLNode
+from htmlnode import HTMLNode, LeafNode
 
 class TestHTMLNode(unittest.TestCase):
     
@@ -42,7 +42,37 @@ class TestHTMLNode(unittest.TestCase):
         html_node = HTMLNode(tag, value, children, props)
         self.assertEqual(str(html_node), desired)
 
+
+class TestLeafNode(unittest.TestCase):
     
+    def test_no_value(self):
+        with self.assertRaises(ValueError):
+            LeafNode("tag", None)
+
+
+    def test_with_value_with_tag(self):
+        leaf_node_1 = LeafNode("p", "This is a paragraph of text.")
+        desired1 = "<p>This is a paragraph of text.</p>"
+        leaf_node_2 = LeafNode("a", "Click me!", {"href": "https://www.google.com"})
+        desired2 = "<a>Click me!</a>"
+        self.assertEqual(leaf_node_1.to_html(), desired1)
+        self.assertEqual(leaf_node_2.to_html(), desired2)
+        
+    
+    
+    def test_with_value_no_tag(self):
+        text = "My text"
+        leaf_node = LeafNode(None, text)
+        self.assertEqual(leaf_node.to_html(), text)
+    
+    
+    def test_tag_is_not_string(self):
+        tag = 1
+        text = "My text"
+        leaf_node = LeafNode(tag, text)
+        self.assertEqual(leaf_node.to_html(), "<1>My text</1>")
+
+
         
 if __name__ == "__main__":
     unittest.main()
