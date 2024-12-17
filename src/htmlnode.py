@@ -32,7 +32,7 @@ class LeafNode(HTMLNode):
     
     def __init__(self, tag, value, props=None):
         if value is None:
-            raise ValueError("Must have value")
+            raise ValueError("Tag must not be None")
 
         super().__init__(tag, value, None, props)
         
@@ -44,9 +44,19 @@ class LeafNode(HTMLNode):
         return f"<{self.tag}>{self.value}</{self.tag}>"
         
         
+class ParentNode(HTMLNode):
+    
+    def __init__(self, tag, children, props=None):
+        super().__init__(tag, None, children, props)
         
-test = LeafNode("p", "This is a paragraph of text.")
-test2 = LeafNode("a", "Click me!", {"href": "https://www.google.com"})
-
-print(test.to_html())
-print(test2.to_html())
+    
+    def to_html(self):
+        if self.tag is None:
+            raise ValueError("Tag must not be None")
+        if self.children is None:
+            raise ValueError("Children must not be None")
+        
+        child_elements = ""
+        for child in self.children:
+            child_elements += child.to_html()
+        return f"<{self.tag}>{child_elements}</{self.tag}>"
