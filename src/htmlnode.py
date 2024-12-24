@@ -17,6 +17,8 @@ class HTMLNode():
             return output
 
         for (k,v) in self.props.items():
+            if v is None:
+                v = ""
             output += f' {k}="{v}"'
         return output
     
@@ -40,8 +42,8 @@ class LeafNode(HTMLNode):
     def to_html(self):
         if self.tag is None:
             return self.value
-        
-        return f"<{self.tag}>{self.value}</{self.tag}>"
+        tag = f"{self.tag}{self.props_to_html()}"
+        return f"<{tag}>{self.value}</{self.tag}>"
         
         
 class ParentNode(HTMLNode):
@@ -60,4 +62,4 @@ class ParentNode(HTMLNode):
         for child in self.children:
             child_elements += child.to_html()
         return f"<{self.tag}>{child_elements}</{self.tag}>"
-
+    
