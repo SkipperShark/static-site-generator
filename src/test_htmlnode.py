@@ -75,7 +75,7 @@ class TestLeafNode(unittest.TestCase):
 
 class TestParentNode(unittest.TestCase):
     
-    def test_to_html(self):
+    def test_to_html_children_only(self):
         desired = "<p><b>Bold text</b>Normal text<i>italic text</i>Normal text</p>"
         node = ParentNode(
             "p",
@@ -88,6 +88,48 @@ class TestParentNode(unittest.TestCase):
         )
         self.assertEqual(node.to_html(), desired)
 
+
+    def test_to_html_nested_parent(self):
+        desired = "<p><p>test<b>hello</b></p>my name is bob</p>"
+        node = ParentNode(
+            "p",
+            [
+                ParentNode(
+                    "p",
+                    [
+                        LeafNode(None, "test"),
+                        LeafNode("b", "hello")
+                        
+                    ]
+                ),
+                LeafNode(None, "my name is bob")
+            ]
+        )
+        self.assertEqual(node.to_html(), desired)
+
+
+    def test_to_html_no_children(self):
+        node = ParentNode("p", None)
+        with self.assertRaises(ValueError):
+            self.assertEqual(node.to_html())
+
+
+    def test_to_html_nested_parent_only(self):
+        desired = "<p><p>first line<b>test</b></p></p>"
+        node = ParentNode(
+            "p",
+            [
+                ParentNode(
+                    "p",
+                    [
+                        LeafNode(None, "first line"),
+                        LeafNode("b", "test")
+                    ]
+                )
+            ]
+        )
+        self.assertEqual(node.to_html(), desired)
+        
         
 if __name__ == "__main__":
     unittest.main()
