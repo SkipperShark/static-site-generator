@@ -27,12 +27,7 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
             result.append(node)
             continue
         
-        
-#* "a"
-#* "**bolded phrase** at the start"
-#* "a **bolded phrase** in the middle"
-#* "at the end **bolded phrase**"
-#* "incomplete **bolded phrase"
+
 
 def split_node_text_by_delimiter(text, delimiter):
     # copy the string into a new var
@@ -45,37 +40,60 @@ def split_node_text_by_delimiter(text, delimiter):
     text_to_delimit = text
     
     while len(text_to_delimit) > 0:
-        print(f"")
-        print(f"text_to_delimit : {text_to_delimit}")
-
+        # print(f"")
+        # print(f"result : {result}")
+        # print(f"text_to_delimit : {text_to_delimit}")
         del_i_open = text_to_delimit.find(delimiter)
-
-        print(f"opening_delimiter_index : {del_i_open}")
+        # print(f"opening_delimiter_index : {del_i_open}")
 
         del_not_found = del_i_open == -1
         if del_not_found:
-            return [text]
+            result.append(text_to_delimit)
+            break
             
         chars = text_to_delimit[0:del_i_open]
-        print(f"chars : {chars}")
+        # print(f"chars : {chars}")
         if len(chars) > 0:
             result.append(chars)
             text_to_delimit = text_to_delimit[del_i_open:]
             continue
 
         else:
-            new_phrase_to_search = text_to_delimit[del_i_open + len(delimiter):]
-            print(f"new_phrase_to_search : {new_phrase_to_search}")
-            closing_delimiter_index = new_phrase_to_search.find(delimiter)
-            phrase = text_to_delimit[del_i_open+len(delimiter):closing_delimiter_index+len(delimiter)]
-            print(f"closing_delimiter_index : {closing_delimiter_index}")
-            print(f"phrase : {phrase}")
-            result.append(phrase)
-            text_to_delimit = text_to_delimit[closing_delimiter_index + len(delimiter):]
+            # check if closing delimitor is found
+            text_to_delimit = text_to_delimit.lstrip(delimiter)
+            closing_del_missing = text_to_delimit.find(delimiter) == -1
+            if closing_del_missing:
+                raise Exception("missing closing delimiter")
+            
+            phrases = text_to_delimit.split(delimiter)
+            result.append(phrases[0])
+            if len(phrases) > 0:
+                text_to_delimit = phrases[1]
             continue
+
     return result
-        
-        
+
+#* ""        
+#* "a"
+#* "**bolded phrase** at the start"
+#* "a **bolded phrase** in the middle"
+#* "at the end **bolded phrase**"
+#* "incomplete **bolded phrase"
+
+test = ""
+print(split_node_text_by_delimiter(test, "**"))
+
+test = "a"
+print(split_node_text_by_delimiter(test, "**"))
+
+test = "**bolded phrase** at the start"
+print(split_node_text_by_delimiter(test, "**"))
+
 test = "a **bolded phrase** in the middle"
 print(split_node_text_by_delimiter(test, "**"))
-        
+
+test = "at the end **bolded phrase**"
+print(split_node_text_by_delimiter(test, "**"))
+
+test = "incomplete **bolded phrase"
+print(split_node_text_by_delimiter(test, "**"))
