@@ -18,57 +18,55 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
     # text within the delimiter should be text nodes of the TextType text_type parameter
     # text outside of the delimiter should be text nodes of TextType TEXT
     
-    #todo after I split the text node of TextType TEXT into a list, how do i 
-    #todo know, which elements of the list is the non-text element?
-    #todo what if there are more than 1 inline element? 
-    
     for node in old_nodes:
-        if node.text_type != TextType.Text:
+        if node.text_type != TextType.TEXT:
             result.append(node)
             continue
         
+        for ele in split_node_text_by_delimiter(node.text, delimiter):
+            if ele["delimited"] == False:
+                result.append(TextNode(ele["text"], TextType.TEXT))
+            else:
+                result.append(TextNode(ele["text"], text_type))
+        
+    return result
 
 
 def split_node_text_by_delimiter(text, delimiter):
-    # copy the string into a new var
-    # while the string is not empty
-    # find the index of the delimiter
-    # get chars up to index of delimiter
-    # if no chars, then delimiter is first word
-        # find other delimitor
     result = []
     text_to_delimit = text
     
     while len(text_to_delimit) > 0:
-        # print(f"")
-        # print(f"result : {result}")
-        # print(f"text_to_delimit : {text_to_delimit}")
-        del_i_open = text_to_delimit.find(delimiter)
-        # print(f"opening_delimiter_index : {del_i_open}")
-
-        del_not_found = del_i_open == -1
-        if del_not_found:
-            result.append(text_to_delimit)
+        delim_i_open = text_to_delimit.find(delimiter)
+        delim_not_found = delim_i_open == -1
+        if delim_not_found:
+            result.append({
+                "text" : text_to_delimit,
+                "delimited" : False
+            })
             break
             
-        chars = text_to_delimit[0:del_i_open]
-        # print(f"chars : {chars}")
+        chars = text_to_delimit[0:delim_i_open]
         if len(chars) > 0:
-            result.append(chars)
-            text_to_delimit = text_to_delimit[del_i_open:]
+            result.append({
+                "text" : chars,
+                "delimited" : False
+            })
+            text_to_delimit = text_to_delimit[delim_i_open:]
             continue
 
         else:
-            # check if closing delimitor is found
             text_to_delimit = text_to_delimit.lstrip(delimiter)
-            closing_del_missing = text_to_delimit.find(delimiter) == -1
-            if closing_del_missing:
+            delim_i_close = text_to_delimit.find(delimiter)
+            if delim_i_close == -1:
                 raise Exception("missing closing delimiter")
             
-            phrases = text_to_delimit.split(delimiter)
-            result.append(phrases[0])
-            if len(phrases) > 0:
-                text_to_delimit = phrases[1]
+            delimited_phrase = text_to_delimit[0:delim_i_close]
+            result.append({
+                "text" : delimited_phrase,
+                "delimited" : True
+            })
+            text_to_delimit = text_to_delimit[delim_i_close+len(delimiter):]
             continue
 
     return result
@@ -80,20 +78,23 @@ def split_node_text_by_delimiter(text, delimiter):
 #* "at the end **bolded phrase**"
 #* "incomplete **bolded phrase"
 
-test = ""
-print(split_node_text_by_delimiter(test, "**"))
+# test = ""
+# print(split_node_text_by_delimiter(test, "**"))
 
-test = "a"
-print(split_node_text_by_delimiter(test, "**"))
+# test = "a"
+# print(split_node_text_by_delimiter(test, "**"))
 
-test = "**bolded phrase** at the start"
-print(split_node_text_by_delimiter(test, "**"))
+# test = "**bolded phrase** at the start"
+# print(split_node_text_by_delimiter(test, "**"))
 
-test = "a **bolded phrase** in the middle"
-print(split_node_text_by_delimiter(test, "**"))
+# test = "a **bolded phrase** in the middle"
+# print(split_node_text_by_delimiter(test, "**"))
 
-test = "at the end **bolded phrase**"
-print(split_node_text_by_delimiter(test, "**"))
+# test = "at the end **bolded phrase**"
+# print(split_node_text_by_delimiter(test, "**"))
 
-test = "incomplete **bolded phrase"
-print(split_node_text_by_delimiter(test, "**"))
+# test = "two **bolded** words in **one** sentence"
+# print(split_node_text_by_delimiter(test, "**"))
+
+# test = "incomplete **bolded phrase"
+# print(split_node_text_by_delimiter(test, "**"))

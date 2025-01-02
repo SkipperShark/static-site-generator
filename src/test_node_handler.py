@@ -16,10 +16,10 @@ class TestSplitNodesDelimiter(unittest.TestCase):
     
     
     def test_1_inline_element_start(self):
-        old_nodes = TextNode(
+        old_nodes = [TextNode(
             "**bolded phrase** in the middle",
             TextType.TEXT
-        )
+        )]
         expected = [
             TextNode("bolded phrase", TextType.BOLD),
             TextNode(" in the middle", TextType.TEXT)
@@ -29,10 +29,10 @@ class TestSplitNodesDelimiter(unittest.TestCase):
 
 
     def test_1_inline_element_middle(self):
-        old_nodes = TextNode(
-            "This is text with a **bolded phrase** in the middle",
+        old_nodes = [TextNode(
+            "This is a text with a **bolded phrase** in the middle",
             TextType.TEXT
-        )
+        )]
         expected = [
             TextNode("This is a text with a ", TextType.TEXT),
             TextNode("bolded phrase", TextType.BOLD),
@@ -43,10 +43,10 @@ class TestSplitNodesDelimiter(unittest.TestCase):
     
     
     def test_1_inline_element_end(self):
-        old_nodes = TextNode(
-            "This is text with a **bolded phrase**",
+        old_nodes = [TextNode(
+            "This is a text with a **bolded phrase**",
             TextType.TEXT
-        )
+        )]
         expected = [
             TextNode("This is a text with a ", TextType.TEXT),
             TextNode("bolded phrase", TextType.BOLD),
@@ -56,4 +56,16 @@ class TestSplitNodesDelimiter(unittest.TestCase):
     
     
     def test_2_inline_elements(self):
-        pass
+        old_nodes = [TextNode(
+            "This is a text with 2 **bolded phrases** in **one** sentence",
+            TextType.TEXT
+        )]
+        expected = [
+            TextNode("This is a text with 2 ", TextType.TEXT),
+            TextNode("bolded phrases", TextType.BOLD),
+            TextNode(" in ", TextType.TEXT),
+            TextNode("one", TextType.BOLD),
+            TextNode(" sentence", TextType.TEXT),
+        ]
+        result = split_nodes_delimiter(old_nodes, "**", TextType.BOLD)
+        self.assertEqual(result, expected)
