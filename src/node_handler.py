@@ -8,16 +8,6 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
     if len(old_nodes) == 0:
         return result
     
-    # pseudocode
-    # if old_nodes is empty, return empty list
-    # if old notes has 1 or more elements
-    # iterate over old nodes
-    # if old node is not a TEXT type text node, just add it to the result
-    # if old node is a TEXT Type text node, split it according to supplied delimiter
-    # if closing delimiter not found, raise exception saying that it's invalid markdown syntax
-    # text within the delimiter should be text nodes of the TextType text_type parameter
-    # text outside of the delimiter should be text nodes of TextType TEXT
-    
     for node in old_nodes:
         if node.text_type != TextType.TEXT:
             result.append(node)
