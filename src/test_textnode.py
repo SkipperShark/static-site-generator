@@ -5,33 +5,57 @@ from htmlnode import LeafNode, text_node_to_html_node
 
 class TestTextNode(unittest.TestCase):
     
-    def test_eq(self):
-        node = TextNode("This is a text node", TextType.BOLD)
-        node2 = TextNode("This is a text node", TextType.BOLD)
-        self.assertEqual(node, node2)
-        
-        
-    def test_repr_with_url(self):
-        text = "test text"
-        text_type = TextType.BOLD
-        url = "test url"
-        node = TextNode(text, text_type, url)
-        self.assertEqual(str(node),f"TextNode({text}, {text_type.value}, {url})")
+    def test_init_valid_no_url(self):
+        node = TextNode("hello", TextType.BOLD)
+        self.assertEqual(node.text, "hello")
+        self.assertEqual(node.text_type.value, TextType.BOLD.value)
+        self.assertIsNone(node.url)
+
+
+    def test_init_valid_with_url(self):
+        node = TextNode("hello", TextType.BOLD, "google.com")
+        self.assertEqual(node.text, "hello")
+        self.assertEqual(node.text_type.value, TextType.BOLD.value)
+        self.assertEqual(node.url, "google.com")
     
     
-    def test_repr_no_url(self):
-        text, text_type= "test text", TextType.BOLD
-        node = TextNode(text, text_type)
-        self.assertEqual(str(node),f"TextNode({text}, {text_type.value}, {None})")
-        self.assertEqual(node.url, None)
-    
-    
-    def test_invalid_text_type(self):
+    def test_init_invalid_text_type(self):
         with self.assertRaises(ValueError):
             TextNode("a text node", "bold")
         with self.assertRaises(ValueError):
             TextNode("a text node", "italic")
             
+
+    def test_eq(self):
+        node1 = TextNode("This is a text node", TextType.BOLD)
+        node2 = TextNode("This is a text node", TextType.BOLD)
+        self.assertEqual(node1, node2)
+        
+        
+    def test_inequality_text(self):
+        node1 = TextNode("this is a text", TextType.TEXT)
+        node2 = TextNode("this is texts", TextType.TEXT)
+        self.assertNotEqual(node1, node2)
+
+
+    def test_inequality_text_type(self):
+        node1 = TextNode("this is a text", TextType.BOLD)
+        node2 = TextNode("this is a text", TextType.TEXT)
+        self.assertNotEqual(node1, node2)
+        
+        
+    def test_inequality_url(self):
+        node1 = TextNode("this is a text", TextType.TEXT, "google.com")
+        node2 = TextNode("this is a text", TextType.TEXT, "yahoo.com")
+        self.assertNotEqual(node1, node2)
+
+        
+    def test_repr(self):
+        node = TextNode("test text", TextType.BOLD)
+        self.assertEqual(repr(node),"TextNode(test text, bold)")
+
+        node = TextNode("test text", TextType.BOLD, "google.com")
+        self.assertEqual(repr(node),"TextNode(test text, bold, google.com)")
 
 
 class TestTextNodeToHTMLNode(unittest.TestCase):

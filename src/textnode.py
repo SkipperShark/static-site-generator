@@ -28,6 +28,7 @@ class TextNode():
             
         
     def __repr__(self):
-        return f"TextNode({self.text}, {self.text_type.value}, {self.url})"
+        url_portion = f", {self.url}" if self.url is not None else ""
+        return f"TextNode({self.text}, {self.text_type.value}{url_portion})"
     
     
