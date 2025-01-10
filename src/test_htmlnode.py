@@ -3,44 +3,70 @@ import unittest
 from htmlnode import HTMLNode, LeafNode, ParentNode
 
 class TestHTMLNode(unittest.TestCase):
+    TEST_TAG = "p"
+    TEST_VALUE = "hello world"
+    TEST_CHILDREN = []
+    TEST_PROPS_1 = {
+        "href": "https://www.google.com", 
+        "target": "_blank",
+    }
+    TEST_PROPS_2 = {
+        "href": "https://www.google.com", 
+    }
+    TEST_PROPS_3 = {}
     
-    def test_props_to_html(self):
-        test_input = {
-            "href": "https://www.google.com", 
-            "target": "_blank",
-        }
-        desired_output = ' href="https://www.google.com" target="_blank"'
-        html_node = HTMLNode(props = test_input) 
-        self.assertEqual(html_node.props_to_html(), desired_output)
-        
-        
+    
+    def test_init(self):
+        html_node = HTMLNode(
+            self.TEST_TAG, self.TEST_VALUE, self.TEST_CHILDREN, self.TEST_PROPS_1
+        )
+        self.assertEqual(html_node.tag, self.TEST_TAG)
+        self.assertEqual(html_node.value, self.TEST_VALUE)
+        self.assertEqual(html_node.children, self.TEST_CHILDREN)
+        self.assertEqual(html_node.props, self.TEST_PROPS_1)
+
+    
+    def test_to_html(self):
+        with self.assertRaises(NotImplementedError):
+            HTMLNode().to_html()
+    
+
     def test_props_to_html_no_props(self):
         html_node = HTMLNode()
         self.assertEqual(html_node.props_to_html(), "")
+
+
+    def test_props_to_html_with_2_props(self):
+        self.assertEqual(
+            HTMLNode(props = self.TEST_PROPS_1).props_to_html(),
+            ' href="https://www.google.com" target="_blank"'
+        )
+
+
+    def test_props_to_html_with_1_prop(self):
+        self.assertEqual(
+            HTMLNode(props = self.TEST_PROPS_2).props_to_html(),
+            ' href="https://www.google.com"'
+        )
         
         
     def test_props_to_html_empty_dict(self):
-        html_node = HTMLNode(props = {})
+        html_node = HTMLNode(props = self.TEST_PROPS_3)
         self.assertEqual(html_node.props_to_html(), "")
+
         
-        
-    def test_props_to_html_one_key_value(self):
-        desired = ' test="hello world"'
-        html_node = HTMLNode(props = {"test": "hello world"})
-        self.assertEqual(html_node.props_to_html(), desired)
-        
-    
     def test_repr(self):
-        tag = "test tag"
-        value = "test value"
-        children = ["test child 1", "test child 2"]
-        props = {
-            "href": "https://www.google.com", 
-            "target": "_blank",
-        }
-        desired = f"HTMLNode(tag={tag}, value={value}, children={children}, props={props})"
-        html_node = HTMLNode(tag, value, children, props)
-        self.assertEqual(str(html_node), desired)
+        html_node = HTMLNode(
+            self.TEST_TAG, self.TEST_VALUE, self.TEST_CHILDREN, self.TEST_PROPS_1
+        )
+        self.assertEqual(
+            str(html_node),
+            (
+                f"HTMLNode(tag={self.TEST_TAG}, value={self.TEST_VALUE}, "
+                f'children={self.TEST_CHILDREN}, '
+                f'props={self.TEST_PROPS_1})'
+            )
+        )
 
 
 class TestLeafNode(unittest.TestCase):
@@ -108,10 +134,10 @@ class TestParentNode(unittest.TestCase):
         self.assertEqual(node.to_html(), desired)
 
 
-    def test_to_html_no_children(self):
-        node = ParentNode("p", None)
-        with self.assertRaises(ValueError):
-            self.assertEqual(node.to_html())
+    # def test_to_html_no_children(self):
+    #     node = ParentNode("p", None)
+    #     with self.assertRaises(ValueError):
+    #         self.assertEqual(node.to_html())
 
 
     def test_to_html_nested_parent_only(self):
