@@ -16,9 +16,9 @@ HTML node would be
 HTMLNode(tag, value, children, props)
 
 HTMLNode("p", None, None, [
-    HTMLNode(None, "hello my name is ", [], None),
-    HTMLNode("b", "bob ", [], None),
-    HTMLNode(None, " and I like pie", [], None),
+    LeafNode(None, "hello my name is ", [], None),
+    LeafNode("b", "bob ", [], None),
+    LeafNode(None, " and I like pie", [], None),
 ])
 
 
