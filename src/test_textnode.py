@@ -3,79 +3,73 @@ import unittest
 from textnode import TextNode, TextType
 from htmlnode import LeafNode, text_node_to_html_node
 
+TEST_TEXT_1 = "hello"
+TEST_TEXT_2 = "hello world"
+TEST_TEXT_TYPE_1 = TextType.TEXT
+TEST_TEXT_TYPE_2 = TextType.BOLD
+TEST_URL_1 = "hello.com"
+TEST_URL_2 = "world.com"
+
+
 class TestTextNode(unittest.TestCase):
-    sample_text_1 = "hello"
-    sample_text_2 = "hello world"
-    sample_text_type_1 = TextType.TEXT
-    sample_text_type_2 = TextType.BOLD
-    sample_url_1 = "hello.com"
-    sample_url_2 = "world.com"
     
     def test_init_valid_no_url(self):
-        node = TextNode(self.sample_text_1, self.sample_text_type_1)
-        self.assertEqual(node.text, self.sample_text_1)
-        self.assertEqual(node.text_type, self.sample_text_type_1)
+        node = TextNode(TEST_TEXT_1, TEST_TEXT_TYPE_1)
+        self.assertEqual(node.text, TEST_TEXT_1)
+        self.assertEqual(node.text_type, TEST_TEXT_TYPE_1)
         self.assertIsNone(node.url)
 
 
     def test_init_valid_with_url(self):
-        node = TextNode(
-            self.sample_text_1, self.sample_text_type_1, self.sample_url_1
-        )
-        self.assertEqual(node.text, self.sample_text_1)
-        self.assertEqual(node.text_type, self.sample_text_type_1)
-        self.assertEqual(node.url, self.sample_url_1)
+        node = TextNode(TEST_TEXT_1, TEST_TEXT_TYPE_1, TEST_URL_1)
+        self.assertEqual(node.text, TEST_TEXT_1)
+        self.assertEqual(node.text_type, TEST_TEXT_TYPE_1)
+        self.assertEqual(node.url, TEST_URL_1)
     
     
     def test_init_invalid_text_type(self):
         with self.assertRaises(ValueError):
-            TextNode(self.sample_text_1, "kek")
+            TextNode(TEST_TEXT_1, "kek")
         with self.assertRaises(ValueError):
-            TextNode(self.sample_text_1, "for the horde!")
+            TextNode(TEST_TEXT_1, "for the horde!")
             
 
     def test_eq(self):
-        node1 = TextNode(self.sample_text_1, self.sample_text_type_1)
-        node2 = TextNode(self.sample_text_1, self.sample_text_type_1)
+        node1 = TextNode(TEST_TEXT_1, TEST_TEXT_TYPE_1)
+        node2 = TextNode(TEST_TEXT_1, TEST_TEXT_TYPE_1)
         self.assertEqual(node1, node2)
         
         
     def test_inequality_text(self):
-        node1 = TextNode(self.sample_text_1, self.sample_text_type_1)
-        node2 = TextNode(self.sample_text_2, self.sample_text_type_1)
+        node1 = TextNode(TEST_TEXT_1, TEST_TEXT_TYPE_1)
+        node2 = TextNode(TEST_TEXT_TYPE_2, TEST_TEXT_TYPE_1)
         self.assertNotEqual(node1, node2)
 
 
     def test_inequality_text_type(self):
-        node1 = TextNode(self.sample_text_1, self.sample_text_type_1)
-        node2 = TextNode(self.sample_text_1, self.sample_text_type_2)
+        node1 = TextNode(TEST_TEXT_1, TEST_TEXT_TYPE_1)
+        node2 = TextNode(TEST_TEXT_1, TEST_TEXT_TYPE_2)
         self.assertNotEqual(node1, node2)
         
         
     def test_inequality_url(self):
-        node1 = TextNode(
-            self.sample_text_1, self.sample_text_type_1, self.sample_url_1
-        )
-        node2 = TextNode(
-            self.sample_text_1, self.sample_text_type_1, self.sample_url_2
-        )
+        node1 = TextNode(TEST_TEXT_1, TEST_TEXT_TYPE_1, TEST_URL_1)
+        node2 = TextNode(TEST_TEXT_1, TEST_TEXT_TYPE_1, TEST_URL_2)
         self.assertNotEqual(node1, node2)
 
         
     def test_repr_no_url(self):
-        node = TextNode(self.sample_text_1, self.sample_text_type_1)
-        self.assertEqual(repr(node),"TextNode(test text, bold)")
+        node = TextNode(TEST_TEXT_1, TEST_TEXT_TYPE_1)
+        self.assertEqual(repr(node), f"TextNode({TEST_TEXT_1}, {TEST_TEXT_TYPE_1.value})")
 
 
     def test_repr_with_url(self):
-        node = TextNode(
-            self.sample_text_1, self.sample_text_type_1, self.sample_url_1
-        )
+        node = TextNode(TEST_TEXT_1, TEST_TEXT_TYPE_1, TEST_URL_1)
         self.assertEqual(
             repr(node),
             (
-                f"TextNode({self.sample_text_1}, "
-                f"{self.sample_text_type_1.value}, {self.sample_url_1})"
+                f"TextNode({TEST_TEXT_1}, "
+                f"{TEST_TEXT_TYPE_1.value}, {TEST_URL_1})"
             )
         )
 
