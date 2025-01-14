@@ -3,7 +3,9 @@ import unittest
 from htmlnode import HTMLNode, LeafNode, ParentNode
 
 TEST_TAG = "p"
+TEST_TAG_2 = "h1"
 TEST_VALUE = "hello world"
+TEST_VALUE_2 = "i cast healing spell"
 TEST_CHILDREN = []
 TEST_PROPS_1 = {
     "href": "https://www.google.com", 
@@ -112,60 +114,127 @@ class TestLeafNode(unittest.TestCase):
     
 class TestParentNode(unittest.TestCase):
     
-    def test_to_html_children_only(self):
-        desired = "<p><b>Bold text</b>Normal text<i>italic text</i>Normal text</p>"
-        node = ParentNode(
-            "p",
-            [
-                LeafNode("b", "Bold text"),
-                LeafNode(None, "Normal text"),
-                LeafNode("i", "italic text"),
-                LeafNode(None, "Normal text"),
-            ],
+    def test_init(self):
+        child_node_1 = LeafNode(TEST_TAG, TEST_VALUE, TEST_PROPS_2)
+        parent_node = ParentNode(TEST_TAG, [child_node_1], TEST_PROPS_1)
+        self.assertEqual(parent_node.tag, TEST_TAG)
+        self.assertEqual(parent_node.props, TEST_PROPS_1)
+        self.assertEqual(parent_node.children, [child_node_1])
+    
+    
+    def test_to_html_no_tag(self):
+        with self.assertRaises(ValueError):
+            node = ParentNode(None, [])
+            node.to_html()
+    
+    def test_to_html_no_children(self):
+        with self.assertRaises(ValueError):
+            node = ParentNode(TEST_TAG, None)
+            node.to_html()
+    
+    def test_to_html_no_children(self):
+        parent = ParentNode(TEST_TAG, [])
+        self.assertEqual(parent.to_html(), f"<{TEST_TAG}></{TEST_TAG}>")
+        
+        
+    def test_to_html_single_child_is_leaf(self):
+        parent = ParentNode(TEST_TAG, [LeafNode(TEST_TAG, TEST_VALUE)])
+        self.assertEqual(
+            parent.to_html(),
+            f"<{TEST_TAG}><{TEST_TAG}>{TEST_VALUE}</{TEST_TAG}></{TEST_TAG}>"
         )
-        self.assertEqual(node.to_html(), desired)
-
-
-    def test_to_html_nested_parent(self):
-        desired = "<p><p>test<b>hello</b></p>my name is bob</p>"
-        node = ParentNode(
-            "p",
+    
+    
+    def test_to_html_multiple_children_all_leaf(self):
+        parent = ParentNode(
+            TEST_TAG,
             [
-                ParentNode(
-                    "p",
-                    [
-                        LeafNode(None, "test"),
-                        LeafNode("b", "hello")
-                        
-                    ]
-                ),
-                LeafNode(None, "my name is bob")
+                LeafNode(TEST_TAG, TEST_VALUE),
+                LeafNode(TEST_TAG_2, TEST_VALUE_2)
             ]
         )
-        self.assertEqual(node.to_html(), desired)
-
-
-    # def test_to_html_no_children(self):
-    #     node = ParentNode("p", None)
-    #     with self.assertRaises(ValueError):
-    #         self.assertEqual(node.to_html())
-
-
-    def test_to_html_nested_parent_only(self):
-        desired = "<p><p>first line<b>test</b></p></p>"
+        self.assertEqual(
+            parent.to_html(),
+            f"<p><p>hello world</p><h1>i cast healing spell</h1></p>"
+        )
+    
+    
+    def test_to_html_single_child_is_parent(self):
         node = ParentNode(
-            "p",
+            TEST_TAG,
             [
                 ParentNode(
-                    "p",
+                    TEST_TAG_2,
+                    [LeafNode(TEST_TAG, TEST_VALUE)]
+                )
+            ]
+        )
+        self.assertEqual(
+            node.to_html(),
+            f"<p><h1><p>hello world</p></h1></p>"
+        )
+    
+    
+    def test_to_html_multiple_child_one_is_parent_other_is_leaf(self):
+        node = ParentNode(
+            TEST_TAG,
+            [
+                ParentNode(
+                    TEST_TAG_2,
+                    [LeafNode(TEST_TAG, TEST_VALUE)]
+                ),
+                LeafNode(TEST_TAG_2, TEST_VALUE_2)
+            ]
+        )
+        self.assertEqual(
+            node.to_html(),
+            f"<p><h1><p>hello world</p></h1><h1>i cast healing spell</h1></p>"
+        )
+    
+    
+    def test_to_html_multiple_child_all_are_parents(self):
+        node = ParentNode(
+            TEST_TAG,
+            [
+                ParentNode(
+                    TEST_TAG,
+                    [LeafNode(TEST_TAG, TEST_VALUE)]
+                ),
+                ParentNode(
+                    TEST_TAG_2,
+                    [LeafNode(TEST_TAG_2, TEST_VALUE_2)]
+                )
+            ]
+        )
+        self.assertEqual(
+            node.to_html(),
+            "<p><p><p>hello world</p></p><h1><h1>i cast healing spell</h1></h1></p>"
+        )
+    
+    
+    def test_to_html_multiple_child_all_are_parents_of_parents_of_leafs(self):
+        node = ParentNode(
+            TEST_TAG,
+            [
+                ParentNode(
+                    TEST_TAG,
                     [
-                        LeafNode(None, "first line"),
-                        LeafNode("b", "test")
+                        ParentNode(
+                            TEST_TAG_2,
+                            [LeafNode(TEST_TAG, TEST_VALUE)]
+                        ),
+                        ParentNode(
+                            TEST_TAG_2,
+                            [LeafNode(TEST_TAG_2, TEST_VALUE_2)]
+                        )
                     ]
                 )
             ]
         )
-        self.assertEqual(node.to_html(), desired)
+        self.assertEqual(
+            node.to_html(),
+            "<p><p><h1><p>hello world</p></h1><h1><h1>i cast healing spell</h1></h1></p></p>"
+        )
         
         
 if __name__ == "__main__":
