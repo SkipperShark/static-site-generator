@@ -2,47 +2,49 @@ import unittest
 from textnode import TextType, TextNode
 from node_handler import text_node_to_html_node, split_nodes_delimiter
 
-TEST_TEXT = "hello world"
+TEST_TEXT_1 = "hello world"
+TEST_TEXT_2 = "i am a mouse"
+TEST_TEXT_3 = "my name is jerry"
 
 class TestTextNodeToHTMLNode(unittest.TestCase):
     
     def test_text_node_to_html_node_text(self):
-        text_node = TextNode(TEST_TEXT, TextType.TEXT)
-        self.assertEqual(text_node_to_html_node(text_node).to_html(), TEST_TEXT)
+        text_node = TextNode(TEST_TEXT_1, TextType.TEXT)
+        self.assertEqual(text_node_to_html_node(text_node).to_html(), TEST_TEXT_1)
 
 
     def test_text_node_to_html_node_bold(self):
-        text_node = TextNode(TEST_TEXT, TextType.BOLD)
-        desired = f"<b>{TEST_TEXT}</b>"
+        text_node = TextNode(TEST_TEXT_1, TextType.BOLD)
+        desired = f"<b>{TEST_TEXT_1}</b>"
         self.assertEqual(text_node_to_html_node(text_node).to_html(), desired)
 
 
     def test_text_node_to_html_node_italic(self):
-        text_node = TextNode(TEST_TEXT, TextType.ITALIC)
-        desired = f"<i>{TEST_TEXT}</i>"
+        text_node = TextNode(TEST_TEXT_1, TextType.ITALIC)
+        desired = f"<i>{TEST_TEXT_1}</i>"
         self.assertEqual(text_node_to_html_node(text_node).to_html(), desired)
 
 
     def test_text_node_to_html_node_code(self):
-        text_node = TextNode(TEST_TEXT, TextType.CODE)
-        desired = f"<code>{TEST_TEXT}</code>"
+        text_node = TextNode(TEST_TEXT_1, TextType.CODE)
+        desired = f"<code>{TEST_TEXT_1}</code>"
         self.assertEqual(text_node_to_html_node(text_node).to_html(), desired)
 
 
     def test_text_node_to_html_node_link_empty(self):
-        text_node = TextNode(TEST_TEXT, TextType.LINK)
-        desired = f'<a href="">{TEST_TEXT}</a>'
+        text_node = TextNode(TEST_TEXT_1, TextType.LINK)
+        desired = f'<a href="">{TEST_TEXT_1}</a>'
         self.assertEqual(text_node_to_html_node(text_node).to_html(), desired)
 
 
     def test_text_node_to_html_node_link_not_empty(self):
-        text_node = TextNode(TEST_TEXT, TextType.LINK, "google.com")
-        desired = f'<a href="google.com">{TEST_TEXT}</a>'
+        text_node = TextNode(TEST_TEXT_1, TextType.LINK, "google.com")
+        desired = f'<a href="google.com">{TEST_TEXT_1}</a>'
         self.assertEqual(text_node_to_html_node(text_node).to_html(), desired)
 
 
     def test_text_node_to_html_node_image(self):
-        text_node = TextNode(TEST_TEXT, TextType.IMAGE, "google.com")
+        text_node = TextNode(TEST_TEXT_1, TextType.IMAGE, "google.com")
         desired = '<img src="google.com" alt=""></img>'
         self.assertEqual(text_node_to_html_node(text_node).to_html(), desired)
 
@@ -61,13 +63,12 @@ class TestSplitNodesDelimiter(unittest.TestCase):
     
     
     def test_1_inline_element_start(self):
-        old_nodes = [TextNode(
-            "**bolded phrase** in the middle",
-            TextType.TEXT
-        )]
+        old_nodes = [
+            TextNode(f"**{TEST_TEXT_1}**{TEST_TEXT_2}",TextType.TEXT)
+        ]
         expected = [
-            TextNode("bolded phrase", TextType.BOLD),
-            TextNode(" in the middle", TextType.TEXT)
+            TextNode(TEST_TEXT_1, TextType.BOLD),
+            TextNode(TEST_TEXT_2, TextType.TEXT)
         ]
         result = split_nodes_delimiter(old_nodes, "**", TextType.BOLD)
         self.assertEqual(result, expected)
@@ -75,13 +76,13 @@ class TestSplitNodesDelimiter(unittest.TestCase):
 
     def test_1_inline_element_middle(self):
         old_nodes = [TextNode(
-            "This is a text with a **bolded phrase** in the middle",
+            f"{TEST_TEXT_1}**{TEST_TEXT_2}**{TEST_TEXT_3}",
             TextType.TEXT
         )]
         expected = [
-            TextNode("This is a text with a ", TextType.TEXT),
-            TextNode("bolded phrase", TextType.BOLD),
-            TextNode(" in the middle", TextType.TEXT)
+            TextNode(TEST_TEXT_1, TextType.TEXT),
+            TextNode(TEST_TEXT_2, TextType.BOLD),
+            TextNode(TEST_TEXT_3, TextType.TEXT)
         ]
         result = split_nodes_delimiter(old_nodes, "**", TextType.BOLD)
         self.assertEqual(result, expected)
@@ -89,12 +90,12 @@ class TestSplitNodesDelimiter(unittest.TestCase):
     
     def test_1_inline_element_end(self):
         old_nodes = [TextNode(
-            "This is a text with a **bolded phrase**",
+            f"{TEST_TEXT_1}**{TEST_TEXT_2}**",
             TextType.TEXT
         )]
         expected = [
-            TextNode("This is a text with a ", TextType.TEXT),
-            TextNode("bolded phrase", TextType.BOLD),
+            TextNode(TEST_TEXT_1, TextType.TEXT),
+            TextNode(TEST_TEXT_2, TextType.BOLD),
         ]
         result = split_nodes_delimiter(old_nodes, "**", TextType.BOLD)
         self.assertEqual(result, expected)
@@ -102,15 +103,15 @@ class TestSplitNodesDelimiter(unittest.TestCase):
     
     def test_2_inline_elements(self):
         old_nodes = [TextNode(
-            "This is a text with 2 **bolded phrases** in **one** sentence",
+            f"{TEST_TEXT_1}**{TEST_TEXT_2}**{TEST_TEXT_3}**{TEST_TEXT_1}**{TEST_TEXT_2}",
             TextType.TEXT
         )]
         expected = [
-            TextNode("This is a text with 2 ", TextType.TEXT),
-            TextNode("bolded phrases", TextType.BOLD),
-            TextNode(" in ", TextType.TEXT),
-            TextNode("one", TextType.BOLD),
-            TextNode(" sentence", TextType.TEXT),
+            TextNode(TEST_TEXT_1, TextType.TEXT),
+            TextNode(TEST_TEXT_2, TextType.BOLD),
+            TextNode(TEST_TEXT_3, TextType.TEXT),
+            TextNode(TEST_TEXT_1, TextType.BOLD),
+            TextNode(TEST_TEXT_2, TextType.TEXT),
         ]
         result = split_nodes_delimiter(old_nodes, "**", TextType.BOLD)
         self.assertEqual(result, expected)
