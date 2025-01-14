@@ -1,7 +1,6 @@
 import unittest
 
 from textnode import TextNode, TextType
-from htmlnode import LeafNode, text_node_to_html_node
 
 TEST_TEXT_1 = "hello"
 TEST_TEXT_2 = "hello world"
