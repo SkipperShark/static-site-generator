@@ -1,8 +1,11 @@
 import unittest
 from textnode import TextType, TextNode
 from node_handler import (
-    text_node_to_html_node, split_nodes_delimiter, split_nodes_link,
-    split_nodes_images
+    text_node_to_html_node,
+    split_nodes_delimiter,
+    split_nodes_link,
+    split_nodes_images,
+    text_to_textnode
 )
 
 TEST_TEXT_1 = "hello world"
@@ -258,7 +261,6 @@ class TestSplitNodesLink(unittest.TestCase):
         )
         
 
-
 class TestSplitNodesImages(unittest.TestCase):
     
     def test_no_nodes(self):
@@ -384,4 +386,8 @@ class TestSplitNodesImages(unittest.TestCase):
                 TextNode(invalid_image_md, TextType.TEXT)
             ]
         )
-        
+
+
+class TestTextToTextNodes(unittest.TestCase):
+    
+    pass
