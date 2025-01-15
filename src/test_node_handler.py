@@ -1,10 +1,16 @@
 import unittest
 from textnode import TextType, TextNode
-from node_handler import text_node_to_html_node, split_nodes_delimiter
+from node_handler import (
+    text_node_to_html_node, split_nodes_delimiter, split_nodes_image
+)
 
 TEST_TEXT_1 = "hello world"
 TEST_TEXT_2 = "i am a mouse"
 TEST_TEXT_3 = "my name is jerry"
+TEST_LINK_1 = "to boot dev"
+TEST_URL_1 = "https://www.boot.dev"
+TEST_LINK_2 = "to youtube"
+TEST_URL_2 = "https://www.youtube.com/@bootdotdev"
 
 class TestTextNodeToHTMLNode(unittest.TestCase):
     
@@ -62,6 +68,14 @@ class TestSplitNodesDelimiter(unittest.TestCase):
         self.assertEqual(expected, result)
     
     
+    def test_1_inline_element_invalid_syntax(self):
+        with self.assertRaises(Exception):
+            old_nodes = [
+                TextNode(f"**{TEST_TEXT_1}{TEST_TEXT_2}",TextType.TEXT)
+            ]
+            split_nodes_delimiter(old_nodes, "**", TextType.BOLD)
+
+
     def test_1_inline_element_start(self):
         old_nodes = [
             TextNode(f"**{TEST_TEXT_1}**{TEST_TEXT_2}",TextType.TEXT)
@@ -115,3 +129,114 @@ class TestSplitNodesDelimiter(unittest.TestCase):
         ]
         result = split_nodes_delimiter(old_nodes, "**", TextType.BOLD)
         self.assertEqual(result, expected)
+        
+        
+class TestSplitNodesImages(unittest.TestCase):
+    
+    def test_no_nodes(self):
+        self.assertEqual(split_nodes_image([]), [])
+        
+        
+    def test_text_with_1_valid_image(self):
+        node = TextNode(
+            f"{TEST_TEXT_1}![{TEST_LINK_1}]({TEST_URL_1}){TEST_TEXT_2}",
+            TextType.TEXT,
+        )
+        self.assertEqual(
+            split_nodes_image([node]),
+            [
+                TextNode(TEST_TEXT_1, TextType.TEXT),
+                TextNode(TEST_LINK_1, TextType.LINK, TEST_URL_1),
+                TextNode(TEST_TEXT_2, TextType.TEXT)
+                
+            ]
+        )
+        
+    
+    def test_text_with_2_valid_images(self):
+        node = TextNode(
+            (
+                f"{TEST_TEXT_1}![{TEST_LINK_1}]({TEST_URL_1})",
+                f"{TEST_TEXT_2}![{TEST_LINK_2}]({TEST_URL_2})"
+            ),
+            TextType.TEXT
+        )
+        self.assertEqual(
+            split_nodes_image([node]),
+            [
+                TextNode(TEST_TEXT_1, TextType.TEXT),
+                TextNode(TEST_LINK_1, TextType.LINK, TEST_URL_1),
+                TextNode(TEST_TEXT_2, TextType.TEXT),
+                TextNode(TEST_LINK_2, TextType.LINK, TEST_URL_2),
+            ]
+        )
+
+
+    def test_text_with_1_valid_image_and_1_invalid_image(self):
+        invalid_image_with_text = f"{TEST_TEXT_2}![{TEST_LINK_2}]({TEST_URL_2}"
+        node = TextNode(
+            (
+                f"{TEST_TEXT_1}![{TEST_LINK_1}]({TEST_URL_1})",
+                invalid_image_with_text
+            ),
+            TextType.TEXT
+        )
+        self.assertEqual(
+            split_nodes_image([node]),
+            [
+                TextNode(TEST_TEXT_1, TextType.TEXT),
+                TextNode(TEST_LINK_1, TextType.LINK, TEST_URL_1),
+                TextNode(invalid_image_with_text, TextType.TEXT),
+            ]
+        )
+        
+        
+    
+    def test_text_with_1_invalid_image(self):
+        invalid = f"{TEST_TEXT_1}![{TEST_LINK_1}]({TEST_URL_1}{TEST_TEXT_2}"
+        node = TextNode(invalid, TextType.TEXT)
+        self.assertEqual(
+            split_nodes_image(node),
+            [
+                TextNode(invalid, TextType.TEXT),
+            ]
+        )
+        
+        
+    def test_just_1_valid_image(self):
+        node = TextNode(f"![{TEST_LINK_1}]({TEST_URL_1})")
+        self.assertEqual(
+            split_nodes_image([node]),
+            [
+                TextNode(TEST_TEXT_1, TextType.LINK, TEST_URL_1)
+            ]
+        )
+
+        
+    def test_just_2_valid_images(self):
+        node = TextNode((
+            f"![{TEST_LINK_1}]({TEST_URL_1})",
+            f"![{TEST_LINK_2}]({TEST_URL_2})"
+        ))
+        self.assertEqual(
+            split_nodes_image([node]),
+            [
+                TextNode(TEST_LINK_1, TextType.LINK, TEST_URL_1),
+                TextNode(TEST_LINK_2, TextType.LINK, TEST_URL_2)
+            ]
+        )
+
+
+    def test_just_1_invalid_image_and_1_valid_image(self):
+        node = TextNode((
+            f"![{TEST_LINK_1}]({TEST_URL_1})",
+            f"![{TEST_LINK_2}]({TEST_URL_2}"
+        ))
+        self.assertEqual(
+            split_nodes_image([node]),
+            [
+                TextNode(TEST_LINK_1, TextType.LINK, TEST_URL_1),
+                TextNode(f"[{TEST_LINK_2}]({TEST_URL_2}", TextType.TEXT)
+            ]
+        )
+        
