@@ -1,7 +1,8 @@
 import unittest
 from textnode import TextType, TextNode
 from node_handler import (
-    text_node_to_html_node, split_nodes_delimiter, split_nodes_link
+    text_node_to_html_node, split_nodes_delimiter, split_nodes_link,
+    split_nodes_images
 )
 
 TEST_TEXT_1 = "hello world"
@@ -261,14 +262,14 @@ class TestSplitNodesLink(unittest.TestCase):
 class TestSplitNodesImages(unittest.TestCase):
     
     def test_no_nodes(self):
-        self.assertEqual(split_nodes_link([]), [])
+        self.assertEqual(split_nodes_images([]), [])
         
         
-    def test_text_no_links(self):
+    def test_text_no_images(self):
         node1 = TextNode(f"{TEST_TEXT_1}", TextType.TEXT)
         node2 = TextNode(f"{TEST_TEXT_2}", TextType.TEXT)
         self.assertEqual(
-            split_nodes_link([node1, node2]),
+            split_nodes_images([node1, node2]),
             [
                 TextNode(f"{TEST_TEXT_1}", TextType.TEXT),
                 TextNode(f"{TEST_TEXT_2}", TextType.TEXT),
@@ -276,110 +277,111 @@ class TestSplitNodesImages(unittest.TestCase):
         )
         
         
-    def test_text_with_1_valid_link(self):
+    def test_text_with_1_valid_image(self):
         node = TextNode(
-            f"{TEST_TEXT_1}[{TEST_LINK_1}]({TEST_URL_1})",
+            f"{TEST_TEXT_1}![{TEST_LINK_1}]({TEST_URL_1})",
             TextType.TEXT
         )
         self.assertEqual(
-            split_nodes_link([node]),
+            split_nodes_images([node]),
             [
                 TextNode(TEST_TEXT_1, TextType.TEXT),
-                TextNode(TEST_LINK_1, TextType.LINK, TEST_URL_1),
+                TextNode(TEST_LINK_1, TextType.IMAGE, TEST_URL_1),
             ]
         )
         
     
-    def test_text_with_2_valid_links(self):
+    def test_text_with_2_valid_images(self):
         node = TextNode(
             (
-                f"{TEST_TEXT_1}[{TEST_LINK_1}]({TEST_URL_1})"
-                f"{TEST_TEXT_2}[{TEST_LINK_2}]({TEST_URL_2})"
+                f"{TEST_TEXT_1}![{TEST_LINK_1}]({TEST_URL_1})"
+                f"{TEST_TEXT_2}![{TEST_LINK_2}]({TEST_URL_2})"
             ),
             TextType.TEXT
         )
         self.assertEqual(
-            split_nodes_link([node]),
+            split_nodes_images([node]),
             [
                 TextNode(TEST_TEXT_1, TextType.TEXT),
-                TextNode(TEST_LINK_1, TextType.LINK, TEST_URL_1),
+                TextNode(TEST_LINK_1, TextType.IMAGE, TEST_URL_1),
                 TextNode(TEST_TEXT_2, TextType.TEXT),
-                TextNode(TEST_LINK_2, TextType.LINK, TEST_URL_2),
+                TextNode(TEST_LINK_2, TextType.IMAGE, TEST_URL_2),
             ]
         )
 
 
-    def test_text_with_1_valid_link_and_1_invalid_link(self):
-        invalid_link_with_text = f"{TEST_TEXT_2}[{TEST_LINK_2}]({TEST_URL_2}"
+    def test_text_with_1_valid_image_and_1_invalid_image(self):
+        invalid_link_with_text = f"{TEST_TEXT_2}[{TEST_LINK_2}]({TEST_URL_2})"
         node = TextNode(
             (
-                f"{TEST_TEXT_1}[{TEST_LINK_1}]({TEST_URL_1})" +
+                f"{TEST_TEXT_1}![{TEST_LINK_1}]({TEST_URL_1})" +
                 invalid_link_with_text
             ),
             TextType.TEXT
         )
         self.assertEqual(
-            split_nodes_link([node]),
+            split_nodes_images([node]),
             [
                 TextNode(TEST_TEXT_1, TextType.TEXT),
-                TextNode(TEST_LINK_1, TextType.LINK, TEST_URL_1),
+                TextNode(TEST_LINK_1, TextType.IMAGE, TEST_URL_1),
                 TextNode(invalid_link_with_text, TextType.TEXT),
             ]
         )
         
         
     
-    def test_text_with_1_invalid_link(self):
-        invalid = f"{TEST_TEXT_1}[{TEST_LINK_1}]({TEST_URL_1}{TEST_TEXT_2}"
+    def test_text_with_1_invalid_image(self):
+        invalid = f"{TEST_TEXT_1}![{TEST_LINK_1}]({TEST_URL_1}{TEST_TEXT_2}"
         node = TextNode(invalid, TextType.TEXT)
         self.assertEqual(
-            split_nodes_link([node]),
+            split_nodes_images([node]),
             [
                 TextNode(invalid, TextType.TEXT),
             ]
         )
         
         
-    def test_just_1_valid_link(self):
-        node = TextNode(f"[{TEST_LINK_1}]({TEST_URL_1})", TextType.TEXT)
+    def test_just_1_valid_image(self):
+        node = TextNode(f"![{TEST_LINK_1}]({TEST_URL_1})", TextType.TEXT)
         self.assertEqual(
-            split_nodes_link([node]),
+            split_nodes_images([node]),
             [
-                TextNode(TEST_LINK_1, TextType.LINK, TEST_URL_1)
+                TextNode(TEST_LINK_1, TextType.IMAGE, TEST_URL_1)
             ]
         )
 
         
-    def test_just_2_valid_links(self):
+    def test_just_2_valid_images(self):
         node = TextNode(
             (
-                f"[{TEST_LINK_1}]({TEST_URL_1})"
-                f"[{TEST_LINK_2}]({TEST_URL_2})"
+                f"![{TEST_LINK_1}]({TEST_URL_1})"
+                f"![{TEST_LINK_2}]({TEST_URL_2})"
             ),
             TextType.TEXT
         )
         self.assertEqual(
-            split_nodes_link([node]),
+            split_nodes_images([node]),
             [
-                TextNode(TEST_LINK_1, TextType.LINK, TEST_URL_1),
-                TextNode(TEST_LINK_2, TextType.LINK, TEST_URL_2)
+                TextNode(TEST_LINK_1, TextType.IMAGE, TEST_URL_1),
+                TextNode(TEST_LINK_2, TextType.IMAGE, TEST_URL_2)
             ]
         )
 
 
-    def test_just_1_invalid_link_and_1_valid_link(self):
+    def test_just_1_invalid_image_and_1_valid_image(self):
+        invalid_image_md = f"[{TEST_LINK_2}]({TEST_URL_2})"
         node = TextNode(
             (
-                f"[{TEST_LINK_1}]({TEST_URL_1})"
-                f"[{TEST_LINK_2}]({TEST_URL_2}"
+                f"![{TEST_LINK_1}]({TEST_URL_1})"
+                + invalid_image_md
             ),
             TextType.TEXT
         )
         self.assertEqual(
-            split_nodes_link([node]),
+            split_nodes_images([node]),
             [
-                TextNode(TEST_LINK_1, TextType.LINK, TEST_URL_1),
-                TextNode(f"[{TEST_LINK_2}]({TEST_URL_2}", TextType.TEXT)
+                TextNode(TEST_LINK_1, TextType.IMAGE, TEST_URL_1),
+                TextNode(invalid_image_md, TextType.TEXT)
             ]
         )
         

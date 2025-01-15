@@ -103,7 +103,57 @@ def split_nodes_link(old_nodes):
     return result
 
 
+def split_nodes_images(old_nodes):
+    result = []
+    if len(old_nodes) == 0:
+        return result
+    
+    class clsItem:
+        def __init__(self, text, is_link, link_text=None, link_url=None):
+            self.text = text
+            self.is_link = is_link
+            self.link_text = link_text
+            self.link_url = link_url
+    
+    for node in old_nodes:
+        links = extract_markdown_images(node.text)
+        if len(links) == 0:
+            result.append(node)
+            continue
 
+        node_text = str(node.text)
+        items = []
+
+        for link in links:
+            link_text, link_url = link[0], link[1]
+            link_md = f"![{link_text}]({link_url})"
+            parts = node_text.partition(link_md)
+            
+            for i, part in enumerate(parts):
+                match i:
+                    case 0:
+                        items.append(clsItem(part, False))
+                    case 1:
+                        items.append(clsItem(part, True, link_text, link_url))
+                    case _:
+                        pass
+            
+            node_text = parts[2]
+
+        if len(node_text) > 0:
+            items.append(clsItem(node_text, False))
+        
+        for clsItem in items:
+            if clsItem.is_link:
+                result.append(TextNode(clsItem.link_text, TextType.IMAGE, clsItem.link_url))
+            else:
+                if len(clsItem.text) == 0:
+                    continue
+                result.append(TextNode(clsItem.text, TextType.TEXT))
+
+    print("-----")
+    return result
+    
 
     
 class Helper:
