@@ -8,6 +8,22 @@ LINK_2 = "https://www.youtube.com/@bootdotdev"
 
 class TestUtilities(unittest.TestCase):
     
+    def test_extract_markdown_images_no_images(self):
+        self.assertEqual([], extract_markdown_images("This is text with"))
+
+
+    def test_extract_markdown_images_invalid(self):
+        text = (
+            f"This is text with a ![rick roll]({IMAGE_LINK_1})"
+            f"and ![obi wan]{IMAGE_LINK_2})"
+        )
+        expected = [
+            ("rick roll", IMAGE_LINK_1)
+        ]
+        result = extract_markdown_images(text)
+        self.assertEqual(expected, result)
+
+
     def test_extract_markdown_images_valid(self):
         text = (
             f"This is text with a ![rick roll]({IMAGE_LINK_1})"
@@ -21,18 +37,22 @@ class TestUtilities(unittest.TestCase):
         self.assertEqual(expected, result)
 
 
-    def test_extract_markdown_images_invalid(self):
+    def test_extract_markdown_links_no_links(self):
+        self.assertEqual([], extract_markdown_links("hello world"))
+
+
+    def test_extract_markdown_links_invalid(self):
         text = (
-            f"This is text with a ![rick roll]({IMAGE_LINK_1})"
-            f"and ![obi wan]{IMAGE_LINK_2})"
+            f"This is text with a link [to boot dev]({LINK_1} and"
+            f"[to youtube]({LINK_2})"
         )
         expected = [
-            ("rick roll", IMAGE_LINK_1)
+            ("to youtube", LINK_2)
         ]
-        result = extract_markdown_images(text)
+        result = extract_markdown_links(text)
         self.assertEqual(expected, result)
-        
-        
+
+
     def test_extract_markdown_links_valid(self):
         text = (
             f"This is text with a link [to boot dev]({LINK_1}) and"
@@ -46,14 +66,4 @@ class TestUtilities(unittest.TestCase):
         self.assertEqual(expected, result)
 
 
-    def test_extract_markdown_links_invalid(self):
-        text = (
-            f"This is text with a link [to boot dev]({LINK_1} and"
-            f"[to youtube]({LINK_2})"
-        )
-        expected = [
-            ("to youtube", LINK_2)
-        ]
-        result = extract_markdown_links(text)
-        self.assertEqual(expected, result)
     
