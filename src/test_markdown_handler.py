@@ -54,3 +54,26 @@ class TestMarkDownToBlocks(unittest.TestCase):
             markdown_to_blocks(f"{HEADING_BLOCK}\n\n\n\n{PARAGRAPH_BLOCK}"),
             [HEADING_BLOCK, PARAGRAPH_BLOCK]
         )
+        
+
+class TestBlockToBlockType(unittest.TestCase):
+    pass
+
+    #testcases
+    # heading1
+    # heading2
+    # heading3
+    # heading4
+    # heading5
+    # heading6
+    # code blocks
+    # quote block
+    # unordered list
+        # test 1 item
+        # test 2 items
+        # test 3 items
+    # ordered list
+        # test 1 item
+        # test 2 items
+        # test 3 items
+    # else -> normal paragraph

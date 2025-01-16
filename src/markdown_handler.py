@@ -1,11 +1,16 @@
 from pprint import pp
-# 2 new lines = blank link = new block
-# 1 new line = continuation of block
-# f = open("sample_md.md", "r")
-# pp(f.readlines())
-# pp(f.read())
+from enum import Enum
 
-def markdown_to_blocks(markdown):
+class MarkdownBlockTypes(Enum):
+    PARAGRAPH = "paragraph"
+    HEADING = "heading"
+    CODE = "code"
+    QUOTE = "quote"
+    UNORDERED_LIST = "unordered list"
+    ORDERED_LIST = "ordered list"
+
+
+def markdown_to_blocks(markdown) -> list[str]:
     print("----- markdown"), print(markdown)
     blocks = markdown.split("\n\n")
     print("----- blocks"), print(blocks)
@@ -15,5 +20,4 @@ def markdown_to_blocks(markdown):
     return cleaned_blocks
     
 
-# print(markdown_to_blocks(f.read()))
-
+def block_to_block_type(markdown_block) -> str:
