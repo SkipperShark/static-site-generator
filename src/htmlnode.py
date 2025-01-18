@@ -46,9 +46,7 @@ class LeafNode(HTMLNode):
         if self.tag is None:
             return self.value
 
-        # html element (with tag)
-        tag = f"{self.tag}{self.props_to_html()}"
-        return f"<{tag}>{self.value}</{self.tag}>"
+        return f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>"
     
     
     def to_repr(self):
