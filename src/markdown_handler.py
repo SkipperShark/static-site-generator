@@ -12,14 +12,9 @@ class MarkdownBlockTypes(Enum):
 
 
 def markdown_to_blocks(markdown) -> list[str]:
-    print("----- markdown"), print(markdown)
     blocks = markdown.split("\n\n")
-    print("----- blocks"), print(blocks)
-    
-    cleaned_blocks = [block.strip("\n") for block in blocks if block != '']
-    print("----- cleaned blocks"), print(cleaned_blocks)
-    return cleaned_blocks
-    
+    return [block.strip.strip().strip("\n") for block in blocks if block != '']
+
 
 def block_to_block_type(markdown_block: str) -> str:
     if re.match(r"^#{1,6} ", markdown_block):
