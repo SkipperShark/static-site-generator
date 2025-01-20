@@ -48,14 +48,14 @@ class TestTextNodeToHTMLNode(unittest.TestCase):
 
 
     def test_text_node_to_html_node_link_not_empty(self):
-        text_node = TextNode(TEST_TEXT_1, TextType.LINK, "google.com")
-        desired = f'<a href="google.com">{TEST_TEXT_1}</a>'
+        text_node = TextNode(TEST_TEXT_1, TextType.LINK, TEST_URL_1)
+        desired = f'<a href="{TEST_URL_1}">{TEST_TEXT_1}</a>'
         self.assertEqual(text_node_to_html_node(text_node).to_html(), desired)
 
 
     def test_text_node_to_html_node_image(self):
-        text_node = TextNode(TEST_TEXT_1, TextType.IMAGE, "google.com")
-        desired = '<img src="google.com" alt=""></img>'
+        text_node = TextNode(TEST_TEXT_1, TextType.IMAGE, TEST_URL_1)
+        desired = f'<img src="{TEST_URL_1}" alt="{TEST_TEXT_1}"></img>'
         self.assertEqual(text_node_to_html_node(text_node).to_html(), desired)
 
 
