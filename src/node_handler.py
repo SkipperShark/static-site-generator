@@ -50,7 +50,6 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
     return result
 
 
-
 def split_nodes_link(old_nodes):
     result = []
     if len(old_nodes) == 0:
