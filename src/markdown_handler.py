@@ -72,7 +72,7 @@ def markdown_to_html_node(markdown: str):
     print("block")
     print(blocks)
 
-    for block in blocks[0:5]:
+    for block in blocks[0:7]:
         print("\n--------------- new iteration of block")
         print("block")
         print(block)
@@ -105,7 +105,25 @@ def markdown_to_html_node(markdown: str):
             top_level_children.append(parent)
             print("parent")
             pp(parent)
+        
+        
+        elif block_type == MarkdownBlockTypes.ORDERED_LIST:
+            list_items = block.split("\n")
+            children = []
             
+            for i, item in enumerate(list_items, start=1):
+                text = item[item.index(". "):].lstrip(". ")
+                children.append(LeafNode("li", f"{i}. {text}"))
+                
+            parent = ParentNode("ol", children)
+            top_level_children.append(parent)
+            print("parent")
+            pp(parent)
+            
+                
+
+
+            list_items = [item.lstrip("* ") for item in block.split("\n")]
 
             
         
@@ -119,7 +137,11 @@ f = open("sample_md.md", "r+")
 markdown_to_html_node(f.read())
 
     
-            
+my_string_1 = "1. abcd"
+print(my_string_1[my_string_1.index(". "):].lstrip(". "))
+my_string_2 = "12345. abcde"
+print(my_string_2[my_string_2.index(". "):].lstrip(". "))
+
     # split the markdown into blocks
     # for each block
         # determine the type of block
