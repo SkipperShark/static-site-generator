@@ -1,4 +1,6 @@
-# This is a heading
+# This is heading1
+
+## this is heading2
 
 This is the first paragraph with only one line of text
 

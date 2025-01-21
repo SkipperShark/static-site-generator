@@ -3,6 +3,8 @@ from enum import Enum
 import re
 
 from node_handler import text_to_textnode, text_node_to_html_node
+from htmlnode import ParentNode
+
 
 class MarkdownBlockTypes(Enum):
     PARAGRAPH = "paragraph"
@@ -50,37 +52,73 @@ def block_to_block_type(block: str):
 
     return MarkdownBlockTypes.PARAGRAPH
 
+
+def get_heading_level_of_heading_block(heading_block):
+    match = re.match(r"^#{1,6} ", heading_block)
+    if not match:
+        return None
+
+    result = match.group()
+    h_level = result.count("#")
+    if h_level > 6:
+        return None
+
+    return h_level
+    
+
 def markdown_to_html_node(markdown: str):
     blocks = markdown_to_blocks(markdown)
+    top_level_children = []
     print("block")
     print(blocks)
 
-    for block in blocks:
+    for block in blocks[0:4]:
         print("\n--------------- new iteration of block")
         print("block")
         print(block)
         block_type = block_to_block_type(block)
         print(f"block type : {block_type}")
         
-        if block_type == MarkdownBlockTypes.PARAGRAPH:
-            text_nodes = text_to_textnode(block)
-            print("text nodes")
-            print(text_nodes)
+        if block_type == MarkdownBlockTypes.HEADING:
+            h_level = get_heading_level_of_heading_block(block)
+            text = block.lstrip("#").lstrip("")
+            text_nodes = text_to_textnode(text)
+            children = [text_node_to_html_node(node) for node in text_nodes]
+            parent = ParentNode(f"h{h_level}", children)
+            top_level_children.append(parent)
+            print("parent")
+            pp(parent)
+            
+        elif block_type == MarkdownBlockTypes.PARAGRAPH:
+            nodes = text_to_textnode(block)
+            children = [text_node_to_html_node(node) for node in nodes]
+            parent = ParentNode(f"p", children)
+            top_level_children.append(parent)
+            print("parent")
+            pp(parent)
             
             
-    return
+
+            
+        
+        # if block_type == MarkdownBlockTypes.PARAGRAPH:
+            
+    print("top_level_children")
+    pp(top_level_children)
+    return top_level_children
 
 f = open("sample_md.md", "r+")
-print(markdown_to_html_node(f.read()))
+markdown_to_html_node(f.read())
 
-
+    
+            
     # split the markdown into blocks
     # for each block
-    # determine the type of block
-    # split the text of the block into text nodes using (text_to_textnode)
-    # for each textnode, convert them into leaf nodes
-    # depending on the type of block, create the appropriate parent html node
-    # then, put all the leaf nodes as children of the parent html node
+        # determine the type of block
+        # split the text of the block into text nodes using (text_to_textnode)
+        # for each textnode, convert them into leaf nodes
+        # depending on the type of block, create the appropriate parent html node
+        # then, put all the leaf nodes as children of the parent html node
     
     # all blocks should be under a parent html node (which is a div)
     
