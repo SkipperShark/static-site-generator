@@ -72,7 +72,7 @@ def markdown_to_html_node(markdown: str):
     print("block")
     print(blocks)
 
-    for block in blocks[0:7]:
+    for block in blocks:
         print("\n--------------- new iteration of block")
         print("block")
         print(block)
@@ -106,11 +106,9 @@ def markdown_to_html_node(markdown: str):
             print("parent")
             pp(parent)
         
-        
         elif block_type == MarkdownBlockTypes.ORDERED_LIST:
             list_items = block.split("\n")
             children = []
-            
             for i, item in enumerate(list_items, start=1):
                 text = item[item.index(". "):].lstrip(". ")
                 children.append(LeafNode("li", f"{i}. {text}"))
@@ -120,10 +118,16 @@ def markdown_to_html_node(markdown: str):
             print("parent")
             pp(parent)
             
+        elif block_type == MarkdownBlockTypes.QUOTE:
+            pass
+        
+        elif block_type == MarkdownBlockTypes.CODE:  
+            children = LeafNode("pre", block.lstrip("```").rstrip("```"))
+            parent = ParentNode("code", children)
+            top_level_children.append(parent)
+            print("parent")
+            pp(parent)
                 
-
-
-            list_items = [item.lstrip("* ") for item in block.split("\n")]
 
             
         
