@@ -7,14 +7,14 @@ This is the first paragraph with only one line of text
 This is the second paragraph with 2 lines
 of text
 
-* first line of unordered list using *
-* second line of unordered list using *
+* first line of unordered list using star with **bolded text** inside
+* second line of unordered list using star with *italic text* inside
 
-- first line of unordered list using -
-- second line of unordered list using -
+- first line of unordered list using dash with **bolded text** inside
+- second line of unordered list using dash with *italic text* inside
 
-1. first item of my ordered list
-2. second item of my ordered list
+1. first item of my ordered list with **bolded text** inside
+2. second item of my ordered list with *italic text* inside
 
 ```This a code text```
 
