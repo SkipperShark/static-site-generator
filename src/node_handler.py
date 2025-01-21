@@ -91,13 +91,13 @@ def split_nodes_link(old_nodes):
         if len(node_text) > 0:
             items.append(clsItem(node_text, False))
         
-        for clsItem in items:
-            if clsItem.is_link:
-                result.append(TextNode(clsItem.link_text, TextType.LINK, clsItem.link_url))
+        for item in items:
+            if item.is_link:
+                result.append(TextNode(item.link_text, TextType.LINK, item.link_url))
             else:
-                if len(clsItem.text) == 0:
+                if len(item.text) == 0:
                     continue
-                result.append(TextNode(clsItem.text, TextType.TEXT))
+                result.append(TextNode(item.text, TextType.TEXT))
 
     print("-----")
     return result
@@ -143,15 +143,14 @@ def split_nodes_images(old_nodes):
         if len(node_text) > 0:
             items.append(clsItem(node_text, False))
         
-        for clsItem in items:
-            if clsItem.is_link:
-                result.append(TextNode(clsItem.link_text, TextType.IMAGE, clsItem.link_url))
+        for item in items:
+            if item.is_link:
+                result.append(TextNode(item.link_text, TextType.IMAGE, item.link_url))
             else:
-                if len(clsItem.text) == 0:
+                if len(item.text) == 0:
                     continue
-                result.append(TextNode(clsItem.text, TextType.TEXT))
+                result.append(TextNode(item.text, TextType.TEXT))
 
-    print("-----")
     return result
     
 
