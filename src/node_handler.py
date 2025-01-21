@@ -155,7 +155,7 @@ def split_nodes_images(old_nodes):
     
 
 
-def text_to_textnode(text):
+def text_to_textnodes(text):
     nodes = [TextNode(text, TextType.TEXT)]
     nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
     nodes = split_nodes_delimiter(nodes, "*", TextType.ITALIC)
