@@ -1,22 +1,18 @@
 # This is a heading
 
->test hell o
-hello my name is bok
+This is the first paragraph with only one line of text
 
-```code```
+This is the second paragraph with 2 lines
+of text
 
-1. first line
-3. second line
-1123123. test
+* first line of unordered list using *
+* second line of unordered list using *
 
->I am a queto
+- first line of unordered list using -
+- second line of unordered list using -
 
-* this ithe first it
-* hello my name is 
-* test
+This is my link [my link][google.com]
 
-This is a paragraph of text. It has some **bold** and *italic* words inside of it.
+This is my image ![random image](google.com)"
 
-* This is the first list item in a list block
-* This is a list item
-* This is another list item
+This is my text with *italics*, it also has **bold** letters
