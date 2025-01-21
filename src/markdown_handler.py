@@ -3,7 +3,7 @@ from enum import Enum
 import re
 
 from node_handler import text_to_textnode, text_node_to_html_node
-from htmlnode import ParentNode
+from htmlnode import ParentNode, LeafNode
 
 
 class MarkdownBlockTypes(Enum):
@@ -72,7 +72,7 @@ def markdown_to_html_node(markdown: str):
     print("block")
     print(blocks)
 
-    for block in blocks[0:4]:
+    for block in blocks[0:5]:
         print("\n--------------- new iteration of block")
         print("block")
         print(block)
@@ -90,19 +90,27 @@ def markdown_to_html_node(markdown: str):
             pp(parent)
             
         elif block_type == MarkdownBlockTypes.PARAGRAPH:
-            nodes = text_to_textnode(block)
-            children = [text_node_to_html_node(node) for node in nodes]
-            parent = ParentNode(f"p", children)
+            text_nodes = text_to_textnode(block)
+            children = [text_node_to_html_node(node) for node in text_nodes]
+            parent = ParentNode("p", children)
             top_level_children.append(parent)
             print("parent")
             pp(parent)
             
+        elif block_type == MarkdownBlockTypes.UNORDERED_LIST:
+            list_items = [item.lstrip("* ") for item in block.split("\n")]
+            print(f"list_items : {list_items}")
+            children = [LeafNode("li", item) for item in list_items]
+            parent = ParentNode("ul", children)
+            top_level_children.append(parent)
+            print("parent")
+            pp(parent)
             
 
             
         
         # if block_type == MarkdownBlockTypes.PARAGRAPH:
-            
+    print("----------")
     print("top_level_children")
     pp(top_level_children)
     return top_level_children
