@@ -13,8 +13,16 @@ of text
 - first line of unordered list using -
 - second line of unordered list using -
 
-This is my link [my link][google.com]
+1. first item of my ordered list
+2. second item of my ordered list
 
-This is my image ![random image](google.com)"
+```This a code text```
+
+>this is the first line of my quote
+>this is the second line of my quote
+
+This is my link [my link](google.com)
+
+This is my image ![random image](google.com)
 
 This is my text with *italics*, it also has **bold** letters

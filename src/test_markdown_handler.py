@@ -131,4 +131,7 @@ class TestBlockToBlockType(unittest.TestCase):
             block_to_block_type(PARAGRAPH_BLOCK),
             mdBlockTypes.PARAGRAPH
         )
-    
+
+
+class TestMarkdownToHTMLNode(unittest.TestCase):
+    pass
