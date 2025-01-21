@@ -5,7 +5,7 @@ from node_handler import (
     split_nodes_delimiter,
     split_nodes_link,
     split_nodes_images,
-    text_to_textnode
+    text_to_textnodes
 )
 
 TEST_TEXT_1 = "hello world"
@@ -419,42 +419,42 @@ class TestTextToTextNodes(unittest.TestCase):
     
     def test_text_only(self):
         self.assertEqual(
-            text_to_textnode(TEST_TEXT_1),
+            text_to_textnodes(TEST_TEXT_1),
             [TextNode(TEST_TEXT_1, TextType.TEXT)]
         )
         
         
     def test_bold_only(self):
         self.assertEqual(
-            text_to_textnode(f"**{TEST_TEXT_1}**"),
+            text_to_textnodes(f"**{TEST_TEXT_1}**"),
             [TextNode(TEST_TEXT_1, TextType.BOLD)]
         )
     
     
     def test_italic_only(self):
         self.assertEqual(
-            text_to_textnode(f"*{TEST_TEXT_1}*"),
+            text_to_textnodes(f"*{TEST_TEXT_1}*"),
             [TextNode(TEST_TEXT_1, TextType.ITALIC)]
         )
 
 
     def test_code_only(self):
         self.assertEqual(
-            text_to_textnode(f"`{TEST_TEXT_1}`"),
+            text_to_textnodes(f"`{TEST_TEXT_1}`"),
             [TextNode(TEST_TEXT_1, TextType.CODE)]
         )
 
 
     def test_image_only(self):
         self.assertEqual(
-            text_to_textnode(f"![{TEST_LINK_1}]({TEST_URL_1})"),
+            text_to_textnodes(f"![{TEST_LINK_1}]({TEST_URL_1})"),
             [TextNode(TEST_LINK_1, TextType.IMAGE, TEST_URL_1)]
         )
 
 
     def test_link_only(self):
         self.assertEqual(
-            text_to_textnode(f"[{TEST_LINK_1}]({TEST_URL_1})"),
+            text_to_textnodes(f"[{TEST_LINK_1}]({TEST_URL_1})"),
             [TextNode(TEST_LINK_1, TextType.LINK, TEST_URL_1)]
         )
 
@@ -467,7 +467,7 @@ class TestTextToTextNodes(unittest.TestCase):
             f"[{TEST_LINK_2}]({TEST_URL_2})"
         )
         self.assertEqual(
-            text_to_textnode(text),
+            text_to_textnodes(text),
             [
                 TextNode(TEST_TEXT_1, TextType.TEXT),
                 TextNode(TEST_TEXT_2, TextType.BOLD),
