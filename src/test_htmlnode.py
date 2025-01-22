@@ -128,11 +128,6 @@ class TestParentNode(unittest.TestCase):
             node.to_html()
     
     def test_to_html_no_children(self):
-        with self.assertRaises(ValueError):
-            node = ParentNode(TEST_TAG, None)
-            node.to_html()
-    
-    def test_to_html_no_children(self):
         parent = ParentNode(TEST_TAG, [])
         self.assertEqual(parent.to_html(), f"<{TEST_TAG}></{TEST_TAG}>")
         
