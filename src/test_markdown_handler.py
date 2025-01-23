@@ -1,7 +1,9 @@
 import unittest
 from markdown_handler import (
-    markdown_to_blocks, block_to_block_type, MarkdownBlockTypes as mdBlockTypes
+    markdown_to_blocks, block_to_block_type, MarkdownBlockTypes as mdBlockTypes,
+    markdown_to_html_node
 )
+from htmlnode import ParentNode, LeafNode
 
 HEADING_1_BLOCK = "# This is a heading1"
 HEADING_2_BLOCK = "## This is a heading2"
@@ -134,4 +136,141 @@ class TestBlockToBlockType(unittest.TestCase):
 
 
 class TestMarkdownToHTMLNode(unittest.TestCase):
-    pass
+    
+    def test_heading1_block(self):
+        self.assertEqual(
+            markdown_to_html_node("# This is a heading1"),
+            ParentNode(
+                "div",
+                [ParentNode("h1", [LeafNode(None, "This is a heading1")])]
+            )
+        )
+        
+        
+    def test_heading2_block(self):
+        self.assertEqual(
+            markdown_to_html_node("## This is a heading2"),
+            ParentNode(
+                "div",
+                [ParentNode("h2", [LeafNode(None, "This is a heading2")])]
+            )
+        )
+
+
+    def test_invalid_heading7_block(self):
+        self.assertEqual(
+            markdown_to_html_node("####### This is a heading2"),
+            ParentNode(
+                "div",
+                [ParentNode("p", [LeafNode(None, "####### This is a heading2")])]
+            )
+        )
+        
+
+    def test_paragraph_block(self):
+        self.assertEqual(
+            markdown_to_html_node(PARAGRAPH_BLOCK),
+            ParentNode(
+                "div",
+                [
+                    ParentNode(
+                        "p",
+                        [
+                            LeafNode(None, "This is a paragraph of text. It has some "),
+                            LeafNode("b", "bold"),
+                            LeafNode(None, " and "),
+                            LeafNode("i", "italic"),
+                            LeafNode(None, " words inside of it."),
+                        ]
+                    )
+                ]
+            )
+        )
+        
+        
+    def test_unordered_list(self):
+        self.assertEqual(
+            markdown_to_html_node(UNORDERED_LIST_BLOCK_1),            
+            ParentNode(
+                "div",
+                [
+                    ParentNode(
+                        "ul",
+                        [
+                            ParentNode(
+                                "li",
+                                [LeafNode(None, "This is the first list item in a list block")]
+                            ),
+                            ParentNode(
+                                "li",
+                                [LeafNode(None, "This is a list item")]
+                            ),
+                            ParentNode(
+                                "li",
+                                [LeafNode(None, "This is another list item")]
+                            ),
+                        ]
+                    )
+                ]
+            )
+        )
+        
+    
+    def test_ordered_list(self):
+        self.assertEqual(
+            markdown_to_html_node(ORDERED_LIST_BLOCK_IN_ORDER),            
+            ParentNode(
+                "div",
+                [
+                    ParentNode(
+                        "ol",
+                        [
+                            ParentNode(
+                                "li",
+                                [LeafNode(None, "First item")]
+                            ),
+                            ParentNode(
+                                "li",
+                                [LeafNode(None, "2nd item")]
+                            )
+                        ]
+                    )
+                ]
+            )
+        )
+        
+    
+    def test_quote(self):
+        self.assertEqual(
+            markdown_to_html_node(QUOTE_BLOCK),            
+            ParentNode(
+                "div",
+                [
+                    ParentNode(
+                        "blockquote",
+                        [
+                            LeafNode(None, "I am a quote")
+                        ]
+                    )
+                ]
+            )
+        )
+        
+        
+    def test_code(self):
+        self.assertEqual(
+            markdown_to_html_node(CODE_BLOCK),            
+            ParentNode(
+                "div",
+                [
+                    ParentNode(
+                        "code",
+                        [LeafNode("pre", "i am a code block")]
+                    )
+                ]
+            )
+        )
+        
+        
+        
+        

@@ -69,119 +69,111 @@ def get_heading_level_of_heading_block(heading_block):
 def text_to_html_nodes(text):
     text_nodes = text_to_textnodes(text)
     return [text_node_to_html_node(text_node) for text_node in text_nodes]
+
+
+def paragraph_to_html_node(block):
+    return ParentNode("p", text_to_html_nodes(block))
+
+
+def heading_to_html_node(block):
+    level = 0
+    for char in block:
+        if char == "#":
+            level += 1
+        else:
+            break
+    text = block[level + 1 :]
+    return ParentNode(
+        f"h{level}",
+        text_to_html_nodes(text)
+    )
+    
+
+def unordered_list_to_html_node(block: str):
+    lines = [item.lstrip("* ") for item in block.split("\n")]
+    li_elems = []
+    for line in lines:
+        li_elems.append(ParentNode("li", text_to_html_nodes(line)))
+    
+    return ParentNode("ul", li_elems)
+
+
+def ordered_list_to_html_node(block):
+    lines = block.split("\n")
+    li_elems = []
+    
+    line: str
+    for line in lines:
+        text = line[line.index(". "):].lstrip(". ")
+        li_elem = ParentNode("li", text_to_html_nodes(text))
+        li_elems.append(li_elem)
+        
+    return ParentNode("ol", li_elems)
+
+
+def quote_to_html_node(block: str):
+    lines = block.split("\n")
+    lines = [line.lstrip(">") for line in lines]
+    text = " ".join(lines)
+    return ParentNode("blockquote", text_to_html_nodes(text))
+
+
+def code_to_html_node(block: str):
+    text = block.lstrip("```").rstrip("```")
+    return ParentNode(
+        "code",
+        [
+            ParentNode("pre", text_to_html_nodes(text))
+        ]
+    )
     
 
 def markdown_to_html_node(markdown: str):
     blocks = markdown_to_blocks(markdown)
-    top_level_children = []
-    print("block")
-    print(blocks)
+    children = []
 
     for block in blocks:
-        print("\n--------------- new iteration of block")
-        print("block")
-        print(block)
         block_type = block_to_block_type(block)
-        print(f"block type : {block_type}")
         
         if block_type == MarkdownBlockTypes.HEADING:
-            text = block.lstrip("#").lstrip("")
-            html_elem = ParentNode(
-                f"h{get_heading_level_of_heading_block(block)}",
-                text_to_html_nodes(text)
-            )
-            top_level_children.append(html_elem)
-            print("html_elem")
-            pp(html_elem)
+            children.append(heading_to_html_node(block))
             
         elif block_type == MarkdownBlockTypes.PARAGRAPH:
-            html_elem = ParentNode("p", text_to_html_nodes(block))
-            top_level_children.append(html_elem)
-            print("html_elem")
-            pp(html_elem)
+            children.append(paragraph_to_html_node(block))
             
         elif block_type == MarkdownBlockTypes.UNORDERED_LIST:
-            list_text_lines = [item.lstrip("* ") for item in block.split("\n")]
-            print(f"list_items : {list_text_lines}")
-            
-            li_elems = []
-            for text_line in list_text_lines:
-                li_elem = ParentNode("li", text_to_html_nodes(text_line))
-                li_elems.append(li_elem)
-            
-            html_elem = ParentNode("ul", li_elems)
-            top_level_children.append(html_elem)
-            print("html_elem")
-            pp(html_elem)
+            children.append(unordered_list_to_html_node(block))
         
         elif block_type == MarkdownBlockTypes.ORDERED_LIST:
-            list_text_lines = block.split("\n")
-
-            li_elems = []
-            for text_line in list_text_lines:
-                text = text_line[text_line.index(". "):].lstrip(". ")
-                li_elem = ParentNode("li", text_to_html_nodes(text))
-                li_elems.append(li_elem)
-                
-            html_elem = ParentNode("ol", li_elems)
-            top_level_children.append(html_elem)
-            print("html_elem")
-            pp(html_elem)
+            children.append(ordered_list_to_html_node(block))
             
         elif block_type == MarkdownBlockTypes.QUOTE:
-            text = " ".join([line.lstrip(">") for line in block.split("\n")])
-            html_elem = ParentNode(
-                "blockquote",
-                text_to_html_nodes(text)
-            )
-            top_level_children.append(html_elem)
-            print("html_elem")
-            pp(html_elem)
+            children.append(quote_to_html_node(block))
         
         elif block_type == MarkdownBlockTypes.CODE:
             text = block.lstrip("```").rstrip("```")
             html_elem = ParentNode(
                 "code",
-                LeafNode("pre", text)
+                [LeafNode("pre", text)]
             )
-            top_level_children.append(html_elem)
-            print("html_elem")
-            pp(html_elem)
+            children.append(html_elem)
                 
+    return ParentNode("div", children)
 
-        # if block_type == MarkdownBlockTypes.PARAGRAPH:
-    print("----------")
-    print("top_level_children")
-    pp(top_level_children)
-    return top_level_children
+# f = open("sample_md.md", "r+")
+# pp(markdown_to_html_node(f.read()))
+test1 = markdown_to_html_node("```i am a code block```")
+test2 = ParentNode(
+    "div",
+    [
+        ParentNode(
+            "code",
+            [LeafNode("pre", "i am a code block")]
+        )
+    ]
+)
+print(test1)
+print(test2)
+print(test1 == test2)
+print(str(test1) == str(test2))
 
-f = open("sample_md.md", "r+")
-markdown_to_html_node(f.read())
-
-    
-# my_string_1 = "1. abcd"
-# print(my_string_1[my_string_1.index(". "):].lstrip(". "))
-# my_string_2 = "12345. abcde"
-# print(my_string_2[my_string_2.index(". "):].lstrip(". "))
-
-    # split the markdown into blocks
-    # for each block
-        # determine the type of block
-        # split the text of the block into text nodes using (text_to_textnode)
-        # for each textnode, convert them into leaf nodes
-        # depending on the type of block, create the appropriate parent html node
-        # then, put all the leaf nodes as children of the parent html node
-    
-    # all blocks should be under a parent html node (which is a div)
-    
-    #Split the markdown into blocks (you already have a function for this)
-    #Loop over each block:
-    #Determine the type of block (you already have a function for this)
-    #Based on the type of block, create a new HTMLNode with the proper data
-    #Assign the proper child HTMLNode objects to the block node. I created a
-    # shared text_to_children(text) function that works for all block types.
-    # It takes a string of text and returns a list of HTMLNodes that represent
-    # the inline markdown using previously created functions
-    # (think TextNode -> HTMLNode).
-    #Make all the block nodes children under a single parent HTML node
-    # (which should just be a div) and return it.
