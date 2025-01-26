@@ -172,8 +172,3 @@ test2 = ParentNode(
         )
     ]
 )
-print(test1)
-print(test2)
-print(test1 == test2)
-print(str(test1) == str(test2))
-
