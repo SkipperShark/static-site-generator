@@ -113,7 +113,7 @@ def ordered_list_to_html_node(block):
 
 def quote_to_html_node(block: str):
     lines = block.split("\n")
-    lines = [line.lstrip(">") for line in lines]
+    lines = [line.lstrip(">").lstrip(" ") for line in lines]
     text = " ".join(lines)
     return ParentNode("blockquote", text_to_html_nodes(text))
 
