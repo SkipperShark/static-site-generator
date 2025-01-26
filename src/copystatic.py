@@ -2,7 +2,7 @@ import os
 import shutil
 
 
-def copy_files(cp_path, dst_path):
+def copy_files_recursive(cp_path, dst_path):
 
     if os.path.isfile(cp_path):
         print(f" * {cp_path} -> {dst_path}")
@@ -13,7 +13,7 @@ def copy_files(cp_path, dst_path):
     
     if os.path.isdir(cp_path):
         for path in os.listdir(cp_path):
-            copy_files(
+            copy_files_recursive(
                 os.path.join(cp_path, path),
                 os.path.join(dst_path, path)
             )
