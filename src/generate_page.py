@@ -1,8 +1,11 @@
+import os
+
 from markdown_handler import (
     markdown_to_blocks,
     block_to_block_type,
     MarkdownBlockTypes,
-    get_heading_level_of_heading_block
+    get_heading_level_of_heading_block,
+    markdown_to_html_node
 )
 
 def extract_title(markdown):
@@ -20,3 +23,27 @@ def extract_title(markdown):
             return block.strip("#").strip(" ")
         
     raise Exception("no h1 header in markdown, can't extract title")
+
+
+def generate_page(from_path, template_path, dest_path):
+    print(f"Generating page from {from_path} to {dest_path} using {template_path}")
+    
+    md_f = open(from_path, "r")
+    md_data = md_f.read()
+    
+    template_f = open(template_path, "r")
+    template_data = template_f.read()
+    
+    html_node = markdown_to_html_node(md_data)
+    content = html_node.to_html()
+    
+    title = extract_title(md_data)
+    
+    html = template_data.replace(r"{{ Title }}", title) \
+        .replace(r"{{ Content }}", content)
+        
+    if not os.path.exists(os.path.dirname(dest_path)):
+        os.makedirs(os.path.dirname(dest_path))
+        
+    f = open(dest_path, "w")
+    f.write(html)
